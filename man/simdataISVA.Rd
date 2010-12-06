@@ -5,7 +5,8 @@
 \description{
   A data set over 2000 features and 50 samples with a binary phenotype
   and two confounding factors. Relative effect size of confounding
-  factors to that of phenotype of interest is 4.
+  factors to that of phenotype of interest is 4. For further details please
+ see reference.
 }
 \usage{simdataISVA}
 \format{

@@ -2,7 +2,7 @@
 \alias{DoISVA}
 \title{Feature selection using independent surrogate variables}
 \description{
-This function performs feature selection for features associated with a phenotype of interest in the presence of known potential confounding factors subject to uncertainty or measurement error.
+Given a data matrix and a phenotype of interest, this function performs feature selection for features associated with the phenotype of interest in the presence of potential confounding factors. The algorithm first finds the variation in the data matrix not associated with the phenotype of interest, and subsequently performs Independent Component Analysis on this residual variation matrix. The number of independent components to be inferred can be prespecified or estimated using Random Matrix Theory. Independent Surrogate Variables (ISVs) are constructed from the independent components and provide estimates of the effect of confounders on the data. These ISVs are then included as covariates in a multivariate regression model to identify features that correlate with the phenotype of interest independently of these potential confounders.
 }
 \usage{
 DoISVA(data.m, pheno.v, cf.m, factor.log, pvthCF = 0.01, th = 0.05, ncomp = NULL)
@@ -10,7 +10,7 @@ DoISVA(data.m, pheno.v, cf.m, factor.log, pvthCF = 0.01, th = 0.05, ncomp = NULL
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{data.m}{Data matrix: rows label features, columns label samples. It is assumed that number of features is much larger than number of samples.}
-  \item{pheno.v}{Numeric vector of length equal to number of columns of data matrix. At present categorical phenotypes are not supported.}
+  \item{pheno.v}{Numeric vector of length equal to number of columns of data matrix. At present only numeric (ordinal) phenotypes are supported, so categorical phenotypes are excluded.}
   \item{cf.m}{Matrix of confounding factors. Rows label samples, Columns label confounding factors, which may be numeric or categorical.}
   \item{factor.log}{A logical vector of same length as columns of \code{cf.m}. FALSE indicates factor is to be treated as a numeric, TRUE as categorical.}
   \item{pvthCF}{P-value threshold to call a significant association between an independent surrogate variable and a confounding factor. By default this is 0.01.}

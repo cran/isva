@@ -3,7 +3,7 @@
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{Main engine function for inference of independent surrogate variables (ISVs)}
 \description{
-This function infers statistically independent surrogate variables by performing Independent Component Analysis on the residual variation orthogonal to that of a phenotype of interest.
+This is the main engine function which infers statistically independent surrogate variables by performing Independent Component Analysis on the residual variation orthogonal to that of a phenotype of interest. It uses the ICA implementation of the fastICA R-package.
 }
 \usage{
 isvaFn(data.m, pheno.v, ncomp = NULL)
