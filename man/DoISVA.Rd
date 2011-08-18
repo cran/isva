@@ -2,10 +2,11 @@
 \alias{DoISVA}
 \title{Feature selection using independent surrogate variables}
 \description{
-Given a data matrix and a phenotype of interest, this function performs feature selection for features associated with the phenotype of interest in the presence of potential confounding factors. The algorithm first finds the variation in the data matrix not associated with the phenotype of interest, and subsequently performs Independent Component Analysis on this residual variation matrix. The number of independent components to be inferred can be prespecified or estimated using Random Matrix Theory. Independent Surrogate Variables (ISVs) are constructed from the independent components and provide estimates of the effect of confounders on the data. These ISVs are then included as covariates in a multivariate regression model to identify features that correlate with the phenotype of interest independently of these potential confounders.
+Given a data matrix and a phenotype of interest, this function performs feature selection to identify features associated with the phenotype of interest in the presence of potential confounding factors. The algorithm first finds the variation in the data matrix not associated with the phenotype of interest (using a linear model), and subsequently performs Independent Component Analysis (ICA) on this residual variation matrix. The number of independent components to be inferred can be prespecified or estimated using Random Matrix Theory. Independent Surrogate Variables (ISVs) are constructed from the independent components and provide estimates of the effect of confounders on the data. These ISVs are then included as covariates in a multivariate regression model to identify features that correlate with the phenotype of interest independently of these potential confounders.
 }
 \usage{
-DoISVA(data.m, pheno.v, cf.m, factor.log, pvthCF = 0.01, th = 0.05, ncomp = NULL)
+DoISVA(data.m, pheno.v, cf.m, factor.log, pvthCF = 0.01, th = 0.05,
+ ncomp = NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -15,7 +16,7 @@ DoISVA(data.m, pheno.v, cf.m, factor.log, pvthCF = 0.01, th = 0.05, ncomp = NULL
   \item{factor.log}{A logical vector of same length as columns of \code{cf.m}. FALSE indicates factor is to be treated as a numeric, TRUE as categorical.}
   \item{pvthCF}{P-value threshold to call a significant association between an independent surrogate variable and a confounding factor. By default this is 0.01.}
   \item{th}{False discovery rate threshold for feature selection. By default this is 0.05.}
-  \item{ncomp}{Number of independent surrogate variables to look for. By default this is NULL, and estimation is performed using approximate Random Matrix Theory.}
+  \item{ncomp}{Number of independent surrogate variables to look for. By default this is NULL, and estimation is performed using Random Matrix Theory.}
 }
 \value{
   A list with following entries:
@@ -30,144 +31,42 @@ DoISVA(data.m, pheno.v, cf.m, factor.log, pvthCF = 0.01, th = 0.05, ncomp = NULL
   \item{pvCF}{P-value matrix of associations between factors (phenotype of interest plus confounding factors) and inferred ISVs. Note that this may be a larger set than the selected ISVs.}
   \item{selisv}{Column indices of selected ISVs.}
 }
-\references{Independent Surrogate Variable Analysis to deconvolve confounding factors in large-scale microarray profiling studies. Submitted.}
+\references{Independent Surrogate Variable Analysis to deconvolve confounding factors in large-scale microarray profiling studies. Teschendorff AE, Zhuang JJ, Widschwendter M. Bioinformatics. 2011 Jun 1;27(11):1496-505.}
 \author{Andrew E Teschendorff}
 
 \examples{
 
-EstDimRMT <- function(data.m){
- ### standardise matrix
- M <- data.m;
- for(c in 1:ncol(M)){
-  M[,c] <- (data.m[,c]-mean(data.m[,c]))/sqrt(var(data.m[,c]));
- }
- sigma2 <- var(as.vector(M));
- Q <- nrow(data.m)/ncol(data.m);
- lambdaMAX <- sigma2*(1+1/Q + 2*sqrt(1/Q));
- lambdaMIN <- sigma2*(1+1/Q - 2*sqrt(1/Q));
- delta <- lambdaMAX - lambdaMIN;#  print(delta);
- step <- round(delta/ncol(data.m),3);
- lambda.v <- seq(lambdaMIN,lambdaMAX,by=step);
- dens.v <- vector();
- ii <- 1;
- for(i in lambda.v){
-   dens.v[ii] <- (Q/(2*pi*sigma2))*sqrt( (lambdaMAX-i)*(i-lambdaMIN) )/i;
-   ii <- ii+1;
- }
- thdens.o <- list(min=lambdaMIN,max=lambdaMAX,step=step,lambda=lambda.v,dens=dens.v);
- C <- 1/nrow(M) * t(M) \%*\% M;
- eigen.o <- eigen(C,symmetric=TRUE);
- estdens.o <- density(eigen.o$values,from=min(eigen.o$values),to=max(eigen.o$values),cut=0);
- intdim <- length(which(eigen.o$values > thdens.o$max));
- return(list(cor=C,dim=intdim,estdens=estdens.o,thdens=thdens.o));
-}
-
-isvaFn <- function(data.m,pheno.v,ncomp=NULL){
-
-  lm.o <- lm(t(data.m) ~ pheno.v);
-  res.m <- t(lm.o$res);
-  model <- model.matrix(~1+pheno.v);
-  if(is.null(ncomp)){
-    rmt.o <-  EstDimRMT(res.m)
-    ncomp <- rmt.o$dim;
-    print(ncomp);
-  }
-  else {
-    print("no need to estimate dimensionality");
-  }
-
-  ### perform ICA on residual matrix
-  fICA.o <- fastICA(res.m,n.comp=ncomp);
-  ### now construct ISV
-  tmp.m <- t(fICA.o$A);
-  isv.m <- tmp.m;
-  for(k in 1:ncol(tmp.m)){
-   pv.v <- apply(data.m,1,function(x){summary(lm(tmp.m[,k] ~ x))$coeff[2,4]});
-   tmp.s <- sort(pv.v,decreasing=FALSE,index.return=TRUE);
-   qv.o <- qvalue(pv.v);
-   nsig <- length(which(qv.o$qvalues<0.05));
-   if( nsig < 500 ){
-     nsig <- 500;
-   }
-   red.m <- data.m[tmp.s$ix[1:nsig],];
-   fICA.o <- fastICA(red.m,n.comp=ncomp);
-   cor.v <- abs(cor(tmp.m[,k],t(fICA.o$A)));
-   kmax <- which.max(cor.v);
-   isv.m[,k] <- t(fICA.o$A)[,kmax];
-   print(paste("Done for ISV ",k,sep=""));   
-  }
-  return(list(n.isv=ncomp,isv=isv.m));
-}
-
-
-## The DoISVA function is currently defined as
-DoISVA <- function(data.m,pheno.v,cf.m,factor.log,pvthCF=0.01,th=0.05,ncomp=NULL){
-
- ### Main ISVA function
- isva.o <- isvaFn(data.m,pheno.v,ncomp);
- ### study pattern of correlation of ISVA components to POI and CFs
- tmp.m <- cbind(pheno.v,cf.m);
- treatfactor <- c(FALSE,factor.log);
- pv.m <- matrix(nrow=ncol(isva.o$isv),ncol=1+ncol(cf.m));
- colnames(pv.m) <- c("POI",colnames(cf.m)); ## POI:phenotype of interest
- for(c in 1:ncol(tmp.m)){
-  if(treatfactor[c]==FALSE){
-   for(sv in 1:ncol(isva.o$isv)){
-    lm.o <- lm(isva.o$isv[,sv] ~ as.numeric(tmp.m[,c]));
-    pv.m[sv,c] <- summary(lm.o)$coeff[2,4];   
-   }
-  }
-  else {
-   for(sv in 1:ncol(isva.o$isv)){
-    lm.o <- lm(isva.o$isv[,sv] ~ as.factor(tmp.m[,c]));
-    pv.m[sv,c] <- pf(summary(lm.o)$fstat[1],summary(lm.o)$fstat[2],summary(lm.o)$fstat[3],lower.tail=FALSE);   
-   }
-  }
- }
-
- ### selection of ISVs
- selisv.idx <- vector();
- for(sv in 1:nrow(pv.m)){
-
-   ncf <- length(which(pv.m[sv,2:ncol(pv.m)]< pvthCF)) ## pvth=0.01
-   minpv <- min(pv.m[sv,2:ncol(pv.m)]);
-   phpv <- pv.m[sv,1];
-   if(ncf > 0){
-     if(minpv < phpv){
-       selisv.idx <- c(selisv.idx,sv);
-     }
-   }
- }
- lm.m <- t(apply(data.m,1,function(x){summary(lm(x ~ pheno.v + isva.o$isv[,selisv.idx]))$coeff[2,3:4]}));
- pv.s <- sort(lm.m[,2],decreasing=FALSE,index.return=TRUE);
- qv.v <- qvalue(pv.s$x)$qvalue;
- ntop <- length(which(qv.v < th));
-
- if(ntop>0){
-  pred.idx <- pv.s$ix[1:ntop];
- }
- else {
-  pred.idx <- NULL;
- }
- 
- return(list(lm=lm.m,qv=qv.v,spv=pv.s$x,rk=pv.s$ix,isv=isva.o$isv[,selisv.idx],nsv=length(selisv.idx),ndeg=ntop,deg=pred.idx,pvCF=pv.m,selisv=selisv.idx));
- 
-} ### END OF FUNCTION
-
-
 ### Example
+
 ### load in simulated data
 data(simdataISVA);
-## factors matrix (2 CFs)
+data.m <- simdataISVA$data;
+pheno.v <- simdataISVA$pheno;
+
+## factors matrix (two confounding factors)
 factors.m <- cbind(simdataISVA$factors[[1]],simdataISVA$factors[[2]]);
 colnames(factors.m) <- c("CF1","CF2");
+
+### Estimate number of significant components of variation
+rmt.o <- EstDimRMT(data.m);
+print(paste("Number of significant components=",rmt.o$dim,sep=""));
+### this makes sense since 1 component is associated with the
+### the phenotype of interest, while the other two are associated
+### with the confounders
+ncp <- rmt.o$dim;
+
 ### Do ISVA
-isva.o <- DoISVA(simdataISVA$data,simdataISVA$pheno,factors.m,factor.log=rep(FALSE,2),pvthCF=0.01,th=0.05,ncomp=NULL);
-### Evaluation
+isva.o <- DoISVA(data.m,pheno.v,factors.m,factor.log=rep(FALSE,2),pvthCF=0.01,
+th=0.05,ncomp=ncp);
+
+### Evaluation (ISVs should correlate with confounders)
 ### modeling of CFs
 print(cor(isva.o$isv,factors.m));
-### sensitivity
+### this shows that CFs are reconstructed fairly well
+
+### sensitivity (fraction of detected true positives)
 print(length(intersect(isva.o$deg,simdataISVA$deg))/length(simdataISVA$deg));
+
 ### PPV (1-false discovery rate)
 print(length(intersect(isva.o$deg,simdataISVA$deg))/length(isva.o$deg));
 
