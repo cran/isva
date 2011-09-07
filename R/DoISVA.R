@@ -1,8 +1,11 @@
 `DoISVA` <-
-function(data.m,pheno.v,cf.m,factor.log,pvthCF=0.01,th=0.05,ncomp=NULL){
+function(data.m,pheno.v,cf.m=NULL,factor.log,pvthCF=0.01,th=0.05,ncomp=NULL){
 
  ### Main ISVA function
  isva.o <- isvaFn(data.m,pheno.v,ncomp);
+
+ if(is.null(cf.m)==FALSE){
+
  ### study pattern of correlation of ISVA components to POI and CFs
  tmp.m <- cbind(pheno.v,cf.m);
  treatfactor <- c(FALSE,factor.log);
@@ -36,6 +39,16 @@ function(data.m,pheno.v,cf.m,factor.log,pvthCF=0.01,th=0.05,ncomp=NULL){
      }
    }
  }
+ if (length(selisv.idx)==0 ){
+   print("No ISVs selected because none correlated with the given confounders. Rerun ISVA with cf.m=NULL option"); stop;
+ }
+ 
+ }
+ else { ### confounder matrix not given, so select all ISVs
+  selisv.idx <- 1:ncol(isva.o$isv);
+  pv.m <- NULL;
+ }
+ 
  lm.m <- t(apply(data.m,1,function(x){summary(lm(x ~ pheno.v + isva.o$isv[,selisv.idx]))$coeff[2,3:4]}));
  pv.s <- sort(lm.m[,2],decreasing=FALSE,index.return=TRUE);
  qv.v <- qvalue(pv.s$x)$qvalue;
