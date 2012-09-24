@@ -71,9 +71,9 @@ print(length(intersect(isva.o$deg,simdataISVA$deg))/length(simdataISVA$deg));
 ### PPV (1-false discovery rate)
 print(length(intersect(isva.o$deg,simdataISVA$deg))/length(isva.o$deg));
 
-### run not knowing what confounders there are and with ncp=4 say.
+### run not knowing what confounders there are and with ncp=3 say.
 isva2.o <- DoISVA(data.m,pheno.v,cf.m=NULL,factor.log=rep(FALSE,2),pvthCF=0.01,
-th=0.05,ncomp=4);
+th=0.05,ncomp=3);
 
 ### sensitivity (fraction of detected true positives)
 print(length(intersect(isva2.o$deg,simdataISVA$deg))/length(simdataISVA$deg));

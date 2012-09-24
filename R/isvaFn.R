@@ -22,7 +22,8 @@ function(data.m,pheno.v,ncomp=NULL){
   tmp.m <- t(fICA.o$A);
   isv.m <- tmp.m;
   for(k in 1:ncol(tmp.m)){
-   pv.v <- apply(data.m,1,function(x){summary(lm(tmp.m[,k] ~ x))$coeff[2,4]});
+   lm.o <- summary(lm(t(data.m) ~ tmp.m[,k]));
+   pv.v <- unlist(lapply(lm.o,function(x){ x$coeff[2,4]}));
    tmp.s <- sort(pv.v,decreasing=FALSE,index.return=TRUE);
    qv.o <- qvalue(pv.v);
    nsig <- length(which(qv.o$qvalues<0.05));

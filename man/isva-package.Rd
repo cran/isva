@@ -11,8 +11,8 @@ Independent Surrogate Variable Analysis is an algorithm for feature selection in
 \tabular{ll}{
 Package: \tab isva\cr
 Type: \tab Package\cr
-Version: \tab 1.3\cr
-Date: \tab 2011-09-07\cr
+Version: \tab 1.5\cr
+Date: \tab 2012-09-24\cr
 License: \tab GPL-2\cr
 LazyLoad: \tab yes\cr
 }
@@ -26,7 +26,4 @@ Maintainer:<a.teschendorff@ucl.ac.uk>
 Independent Surrogate Variable Analysis to deconvolve confounding factors in large-scale microarray profiling studies. Teschendorff AE, Zhuang JJ, Widschwendter M. Bioinformatics. 2011 Jun 1;27(11):1496-505.
 }
 \keyword{multivariate}
-\seealso{
-}
-\examples{
-}
+

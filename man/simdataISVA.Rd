@@ -3,15 +3,15 @@
 \docType{data}
 \title{Simulated data for ISVA}
 \description{
-  A synthetic data set of 2000 features and 50 samples with a binary phenotype
+  A synthetic data set of 750 features and 50 samples with a binary phenotype
   and two confounding factors. Relative effect size of confounding
-  factors (CFs) to that of phenotype of interest is 4. For further details please
+  factors (CFs) to that of phenotype of interest is 2. For further details please
  see reference.
 }
 \usage{simdataISVA}
 \format{
   This synthetic data set is a list object containing the following
-  elements: (i) data is the data matrix (2000 features, 50 samples),
+  elements: (i) data is the data matrix (750 features, 50 samples),
   (ii) pheno is a binary phenotype vector, (iii) factors is a list of
   length two containing the two binary confounding factors, (iv) deg is
   the index vector of those truly differentially "expressed" features, (v)
