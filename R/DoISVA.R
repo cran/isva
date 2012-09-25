@@ -27,6 +27,7 @@ function(data.m,pheno.v,cf.m=NULL,factor.log,pvthCF=0.01,th=0.05,ncomp=NULL){
  }
 
  ### selection of ISVs
+ print("Selecting ISVs");
  selisv.idx <- vector();
  for(sv in 1:nrow(pv.m)){
 
@@ -48,20 +49,43 @@ function(data.m,pheno.v,cf.m=NULL,factor.log,pvthCF=0.01,th=0.05,ncomp=NULL){
   selisv.idx <- 1:ncol(isva.o$isv);
   pv.m <- NULL;
  }
- 
- lm.m <- t(apply(data.m,1,function(x){summary(lm(x ~ pheno.v + isva.o$isv[,selisv.idx]))$coeff[2,3:4]}));
- pv.s <- sort(lm.m[,2],decreasing=FALSE,index.return=TRUE);
+ print("Running final multivariate regressions with selected ISVs");
+ selisv.m <- matrix(isva.o$isv[,selisv.idx],ncol=length(selisv.idx));
+ mod <- model.matrix( ~ pheno.v + selisv.m);
+ modNULL <- model.matrix( ~ selisv.m);
+
+ df1 <- dim(mod)[2]
+ df0 <- dim(modNULL)[2]
+ pv.v <- rep(0, nrow(data.m));
+ Id <- diag(ncol(data.m))
+ resid <- data.m %*% (Id - mod %*% solve(t(mod) %*% mod) %*%
+        t(mod))
+ rss1 <- rowSums(resid * resid)
+ rm(resid)
+ residNULL <- data.m %*% (Id - modNULL %*% solve(t(modNULL) %*% modNULL) %*%
+        t(modNULL))
+ rssNULL <- rowSums(residNULL * residNULL)
+ rm(residNULL)
+ fstats <- ((rssNULL - rss1)/(df1 - df0))/(rss1/(ncol(data.m) - df1))
+ pv.v <- 1 - pf(fstats, df1 = (df1 - df0), df2 = (ncol(data.m) - df1))
+ pv.s <- sort(pv.v,decreasing=FALSE,index.return=TRUE);
  qv.v <- qvalue(pv.s$x)$qvalue;
  ntop <- length(which(qv.v < th));
-
+ print(paste("Number of DEGs after ISV adjustment = ",ntop,sep=""));
  if(ntop>0){
   pred.idx <- pv.s$ix[1:ntop];
+  ### find t-stats of significant ones
+  lm.o <- lm( t(data.m[pred.idx,]) ~ pheno.v + selisv.m );
+  tstats.v <- unlist(lapply(summary(lm.o),function(x){ x$coeff[2,3];}));
+  lm.m <- cbind(tstats.v,pv.s$x[1:ntop],qv.v[1:ntop]);
+  colnames(lm.m) <- c("t-stat","P-value","q-value");
  }
  else {
   pred.idx <- NULL;
+  lm.m <- NULL;
  }
  
- return(list(lm=lm.m,qv=qv.v,spv=pv.s$x,rk=pv.s$ix,isv=isva.o$isv[,selisv.idx],nsv=length(selisv.idx),ndeg=ntop,deg=pred.idx,pvCF=pv.m,selisv=selisv.idx));
+ return(list(spv=pv.s$x,qv=qv.v,rk=pv.s$ix,ndeg=ntop,deg=pred.idx,lm=lm.m,isv=selisv.m,nsv=length(selisv.idx),pvCF=pv.m,selisv=selisv.idx));
  
 } ### END OF FUNCTION
 

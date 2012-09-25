@@ -1,7 +1,7 @@
 Package: isva
 Type: Package
 Title: Independent Surrogate Variable Analysis
-Version: 1.6
+Version: 1.7
 Date: 2012-09-25
 Author: Andrew E Teschendorff
 Maintainer: <a.teschendorff@ucl.ac.uk>
@@ -12,5 +12,5 @@ Description: Independent Surrogate Variable Analysis is an algorithm
 License: GPL-2
 LazyLoad: yes
 Repository: CRAN
-Date/Publication: 2012-09-25 05:57:49
-Packaged: 2012-09-25 00:03:35 UTC; root
+Date/Publication: 2012-09-25 17:13:34
+Packaged: 2012-09-25 15:37:22 UTC; root

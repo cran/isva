@@ -20,14 +20,14 @@ DoISVA(data.m, pheno.v, cf.m = NULL, factor.log, pvthCF = 0.01,
 }
 \value{
   A list with following entries:
-  \item{lm}{Matrix of feature regression statistics and P-values.}
-  \item{qv}{Estimated sorted q-values (False Discovery Rate).}
   \item{spv}{Sorted P-values.}
   \item{rk}{Ranked index of features.}
-  \item{isv}{Matrix of selected independent surrogate variables (ISVs).}
-  \item{nsv}{Number of selected ISVs.}
+  \item{qv}{Estimated sorted q-values (False Discovery Rate).}
   \item{ndeg}{Number of differentially altered features.}
   \item{deg}{Indices of differentially altered features.}
+  \item{lm}{Matrix of significant feature regression statistics and P-values.}
+  \item{isv}{Matrix of selected independent surrogate variables (ISVs).}
+  \item{nsv}{Number of selected ISVs.}
   \item{pvCF}{P-value matrix of associations between factors (phenotype of interest plus confounding factors) and inferred ISVs. Note that this may be a larger set than the selected ISVs.}
   \item{selisv}{Column indices of selected ISVs.}
 }

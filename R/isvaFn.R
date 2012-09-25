@@ -7,7 +7,7 @@ function(data.m,pheno.v,ncomp=NULL){
   if(is.null(ncomp)){
     rmt.o <-  EstDimRMT(res.m)
     ncomp <- rmt.o$dim;
-    print(ncomp);
+    print(paste("Number of candidate ISVs = ",ncomp,sep=""));
   }
   else {
     print("no need to estimate dimensionality");
@@ -37,7 +37,7 @@ function(data.m,pheno.v,ncomp=NULL){
    cor.v <- abs(cor(tmp.m[,k],t(fICA.o$A)));
    kmax <- which.max(cor.v);
    isv.m[,k] <- t(fICA.o$A)[,kmax];
-   print(paste("Done for ISV ",k,sep=""));   
+   print(paste("Built ISV ",k,sep=""));   
   }
   return(list(n.isv=ncomp,isv=isv.m));
 }
