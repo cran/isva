@@ -14,8 +14,6 @@ function(data.m,pheno.v,ncomp=NULL){
   }
 
   ### perform ICA on residual matrix
-  library(qvalue);
-  library(fastICA);
   fICA.o <- fastICA(res.m,n.comp=ncomp);
 
   ### now construct ISV
