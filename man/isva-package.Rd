@@ -5,14 +5,23 @@
 Independent Surrogate Variable Analysis
 }
 \description{
-Independent Surrogate Variable Analysis is an algorithm for feature selection in the presence of potential confounding factors, specially designed for the analysis of large-scale high-dimensional quantitative genomic data (e.g microarrays). It uses Independent Component Analysis (ICA) to model the confounding factors as independent surrogate variables (ISVs). These ISVs are included as covariates in a multivariate regression model to subsequently identify features that correlate with a phenotype of interest independently of these confounders. The ICA implementation used is that of the fastICA R-package.
+Independent Surrogate Variable Analysis is an algorithm for feature
+selection in the presence of potential confounding factors, specially
+designed for the analysis of large-scale high-dimensional quantitative
+genomic data (e.g microarrays). It uses Independent Component Analysis
+(ICA) to model the confounding factors as independent surrogate
+variables (ISVs). These ISVs are included as covariates in a
+multivariate regression model to subsequently identify features that
+correlate with a phenotype of interest independently of these
+confounders. Two ICA implementations are offered: JADE from the JADE
+R-package and fastICA from the fastICA R-package.
 }
 \details{
 \tabular{ll}{
 Package: \tab isva\cr
 Type: \tab Package\cr
-Version: \tab 1.7\cr
-Date: \tab 2012-09-25\cr
+Version: \tab 1.9\cr
+Date: \tab 2017-01-13\cr
 License: \tab GPL-2\cr
 LazyLoad: \tab yes\cr
 }

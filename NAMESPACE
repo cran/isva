@@ -1,11 +1,12 @@
-# Default NAMESPACE created by R
-# Remove the previous line if you edit this file
-
 # Export all names
 exportPattern(".")
 
 # Import all packages listed as Imports or Depends
 import(
   qvalue,
-  fastICA
+  fastICA,
+  JADE
 )
+importFrom("grDevices", "dev.off", "pdf")
+importFrom("graphics", "abline", "points")
+importFrom("stats", "cor", "density", "lm", "model.matrix", "pf","pnorm", "var")

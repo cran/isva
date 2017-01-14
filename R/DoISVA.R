@@ -1,8 +1,8 @@
 `DoISVA` <-
-function(data.m,pheno.v,cf.m=NULL,factor.log,pvthCF=0.01,th=0.05,ncomp=NULL){
+function(data.m,pheno.v,cf.m=NULL,factor.log,pvthCF=0.01,th=0.05,ncomp=NULL,icamethod=c("JADE","fastICA")){
 
  ### Main ISVA function
- isva.o <- isvaFn(data.m,pheno.v,ncomp);
+ isva.o <- isvaFn(data.m,pheno.v,ncomp,icamethod);
 
  if(is.null(cf.m)==FALSE){
 
