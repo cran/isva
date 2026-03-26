@@ -1,17 +1,17 @@
 Package: isva
-Type: Package
+Version: 1.10
 Title: Independent Surrogate Variable Analysis
-Version: 1.9
-Date: 2017-1-14
-Author: Andrew E Teschendorff
-Maintainer: Andrew Teschendorff <a.teschendorff@ucl.ac.uk>
-Depends: qvalue, fastICA, JADE
-Description: Independent Surrogate Variable Analysis is an algorithm
-        for feature selection in the presence of potential confounding
-        factors (see Teschendorff AE et al 2011, <doi: 10.1093/bioinformatics/btr171>).
-License: GPL-2
+Imports: qvalue, fastICA, JADE
+Authors@R: c(person(given = "Andrew", family = "Teschendorff", role = c("aut", "cre"),
+                    email = "andrew@sinh.ac.cn",
+		    comment = c(ORCID = "0000-0001-7410-6527")))
+Description: Uses Independent Component Analysis to perform feature selection in the presence of unknown confounders.
+License: GPL-2 | GPL-3
 LazyLoad: yes
+NeedsCompilation: yes
+Author: Andrew Teschendorff [aut, cre] (ORCID:
+    <https://orcid.org/0000-0001-7410-6527>)
+Maintainer: Andrew Teschendorff <andrew@sinh.ac.cn>
 Repository: CRAN
-NeedsCompilation: no
-Packaged: 2017-01-14 00:16:24 UTC; andrew
-Date/Publication: 2017-01-14 01:35:23
+Packaged: 2026-03-26 01:46:34 UTC; root
+Date/Publication: 2026-03-26 13:20:15 UTC

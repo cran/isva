@@ -110,6 +110,9 @@ print(length(intersect(isva2.o$deg,simdataISVA$deg))/length(simdataISVA$deg));
 ### PPV (1-false discovery rate)
 print(length(intersect(isva2.o$deg,simdataISVA$deg))/length(isva2.o$deg));
 
+\dontshow{
+unlink("RMTplot.pdf")
+}
 
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
